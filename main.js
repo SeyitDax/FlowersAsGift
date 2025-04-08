@@ -31,28 +31,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("touchend", (e) => {
     try {
-        e.preventDefault(); 
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-
-        console.log("✅ Touch End:", touchEndX, touchEndY);
-
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchStartY - touchEndY; // Negative = swipe up
-
-        console.log("📌 Delta X:", deltaX, "📌 Delta Y:", deltaY);
-
-        // 🔹 Handle Right Swipe
-        const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
-        
-        if (isHorizontal) {
-            handleSwipe(deltaX);
-        } else if (deltaY > 60) { 
-            console.log("⬆️ Swipe Up Detected!");
-            showKeyboard();
+      e.preventDefault();
+      const touchEndX = e.changedTouches[0].clientX; // Get end coordinates
+      const touchEndY = e.changedTouches[0].clientY;
+  
+      // Calculate deltas using original start positions
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY; // Now positive = swipe down
+  
+      // Determine primary swipe direction
+      const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+      const isVertical = Math.abs(deltaY) > Math.abs(deltaX);
+  
+      // Horizontal swipe (theme change)
+      if (isHorizontal && Math.abs(deltaX) > 60) {
+        handleSwipe(deltaX);
+      }
+      // Vertical swipe (keyboard toggle)
+      else if (isVertical && Math.abs(deltaY) > 60) {
+        if (deltaY < 0) { // Negative deltaY = swipe up
+          showKeyboard();
+        } else {
+          hideKeyboard();
         }
-    }
-    catch (error) {
+      }
+    } catch (error) {
       console.error("Touchend Error:", error);
     }
   });
@@ -78,6 +81,8 @@ function handleSwipe(deltaX) {
         setTimeout(() => {
             document.body.classList.remove('theme-changing');
         }, 500);
+
+        localStorage.setItem('isBlueTheme', isBlueTheme);
     }
 }
 
@@ -92,40 +97,72 @@ function showKeyboard() {
 
 function hideKeyboard() {
     const keyboard = document.getElementById('keyboardOverlay');
+    const input = document.getElementById('magicInput');
     if (keyboard) {
-        keyboard.classList.remove('visible');
+      keyboard.classList.remove('visible');
+      input.blur(); // Remove focus
+      input.value = ''; // Clear input
+      // Force layout recalc to prevent strange scroll behavior
+      void keyboard.offsetHeight;
     }
 }
 
 // Keyword Detection
 document.addEventListener("DOMContentLoaded", () => {
-  const magicInput = document.getElementById('magicInput');
+  isBlueTheme = localStorage.getItem('isBlueTheme') === 'true';
 
-  if (magicInput) { // Check if element exists
-      magicInput.addEventListener('input', (e) => {
-          if (KEYWORD.some(keyword => 
-              e.target.value.toLowerCase() === keyword.toLowerCase())) {
-              isMagicActive = true;
-              hideKeyboard();
-              document.body.style.cursor = 'pointer';
-          }
-      });
+  document.body.clientWidth; // Force browser to acknowledge transitions
+  document.body.classList.add('theme-changing');
+
+  pinkStyle.disabled = isBlueTheme;
+  blueStyle.disabled = !isBlueTheme;
+
+  document.body.classList.add('theme-changing');
+  setTimeout(() => {
+      document.body.classList.remove('theme-changing');
+  }, 500);
+
+  const magicInput = document.getElementById('magicInput');
+  if (magicInput) {
+    magicInput.addEventListener('input', (e) => {
+      const inputValue = e.target.value.trim();
+      if (KEYWORD.some(keyword => inputValue.toLowerCase() === keyword.toLowerCase())) {
+        isMagicActive = true;
+        hideKeyboard();
+        document.body.style.cursor = 'pointer';
+        e.target.value = ''; // Clear input
+      }
+    });
   } else {
-      console.error("❌ Error: Element with ID 'magicInput' not found.");
+    console.error("Magic input element not found");
   }
 });
 
 // Heart Particles
-document.addEventListener('click', (e) => {
-    if (!isMagicActive) return;
-    
-    const heartCount = 8;
-    const colors = ['#ff4081', '#ff79b0', '#ff1493', '#ff6ec4'];
-    
-    for (let i = 0; i < heartCount; i++) {
-        createHeart(e.clientX, e.clientY, colors);
-    }
-});
+ const handleHeartCreate = (e) => {
+  if (!isMagicActive) return;
+
+  // Get coordinates for both mouse and touch events
+  let x, y;
+  if (e.type === 'touchend') {
+    const touch = e.changedTouches[0];
+    x = touch.clientX;
+    y = touch.clientY;
+  } else {
+    x = e.clientX;
+    y = e.clientY;
+  }
+
+  const heartCount = 8;
+  const colors = ['#ff4081', '#ff79b0', '#ff1493', '#ff6ec4'];
+  
+  for (let i = 0; i < heartCount; i++) {
+    createHeart(x, y, colors);
+  }
+};
+
+document.addEventListener('click', handleHeartCreate);
+document.addEventListener('touchend', handleHeartCreate);
 
 function createHeart(x, y, colors) {
     const heart = document.createElement('div');
