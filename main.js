@@ -19,6 +19,8 @@ const KEYWORD = ["Merve Beyza", "Beyza", "Merve Beyza Yanbaz"];
 document.addEventListener("DOMContentLoaded", () => {
   console.log("📌 DOM fully loaded. Attaching swipe listeners...");
 
+  // TouchScreen Event Listeners
+
   document.addEventListener("touchstart", (e) => {
     try {
       touchStartX = e.touches[0].clientX;
@@ -59,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Touchend Error:", error);
     }
   });
-
+  
   console.log("✅ Swipe Listeners Attached!");
 }, {passive: true});
 
@@ -83,6 +85,7 @@ function handleSwipe(deltaX) {
         }, 500);
 
         localStorage.setItem('isBlueTheme', isBlueTheme);
+        document.querySelectorAll('.heart-particle').forEach(heart => heart.remove());
     }
 }
 
