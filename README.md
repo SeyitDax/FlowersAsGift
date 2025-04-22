@@ -30,8 +30,8 @@ A romantic and playful webpage built with love. This interactive site responds t
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/flower-webpage.git
-cd flower-webpage
+git clone https://github.com/SeyitDax/FlowersAsGift.git
+cd FlowersAsGift
 ```
 
 2. Open `index.html` in your browser.
