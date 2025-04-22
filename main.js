@@ -1,3 +1,6 @@
+function random(max) {
+  return Math.random() * max;
+}
 let touchStartX = 0, touchStartY = 0;
 
 onload = () => {
@@ -61,13 +64,45 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Touchend Error:", error);
     }
   });
-  
   console.log("✅ Swipe Listeners Attached!");
+
+  // Mouse Event Listeners
+
+  let mouseDown = false;
+  let mouseStartX = 0, mouseStartY =0;
+
+  document.addEventListener("mousedown", (e) =>{
+    mouseDown = true;
+    mouseStartX = e.clientX;
+    mouseStartY = e.clientY;
+  });
+
+  document.addEventListener("mouseup", (e) =>{
+    if(!mouseDown) return;
+    mouseDown = false;
+
+    const deltaX = e.clientX - mouseStartX;
+    const deltaY = e.clientY - mouseStartY;
+
+    const isHorizontal = Math.abs(deltaX) > Math.abs(deltaY);
+    const isVertical = Math.abs(deltaY) > Math.abs(deltaX);
+
+    if (isHorizontal && Math.abs(deltaX) > 60){
+      handleSwipe(deltaX);
+    } else if (isVertical && Math.abs(deltaY) > 60) {
+      if(deltaY < 0) showKeyboard();
+      else hideKeyboard();
+    }
+  });
+
+  console.log("✅ Mouse Listeners Attached!");
+  
 }, {passive: true});
 
 function handleSwipe(deltaX) {
     const swipeThreshold = 60; // Minimum 60px swipe
     const absDelta = Math.abs(deltaX);
+    const overlay = document.getElementById("themeChangeOverlay");
 
     if (deltaX > swipeThreshold) {
         document.body.clientWidth; // Force browser to acknowledge transitions
@@ -75,6 +110,7 @@ function handleSwipe(deltaX) {
 
          // Toggle theme based on direction
         isBlueTheme = deltaX > 0 ? !isBlueTheme : isBlueTheme; 
+        overlay.style.opacity = "1";
 
         pinkStyle.disabled = isBlueTheme;
         blueStyle.disabled = !isBlueTheme;
@@ -84,6 +120,7 @@ function handleSwipe(deltaX) {
             document.body.classList.remove('theme-changing');
         }, 500);
 
+        overlay.style.opacity = "0";
         localStorage.setItem('isBlueTheme', isBlueTheme);
         document.querySelectorAll('.heart-particle').forEach(heart => heart.remove());
     }
@@ -171,6 +208,8 @@ function createHeart(x, y, colors) {
     const heart = document.createElement('div');
     heart.innerHTML = '❤';
     heart.className = 'heart-particle';
+    heart.style.setProperty("--dx", random(2)- 1);
+    heart.style.setProperty("--dy", random(2)- 1);
     heart.style.left = `${x}px`;
     heart.style.top = `${y}px`;
     heart.style.color = colors[Math.floor(Math.random() * colors.length)];
