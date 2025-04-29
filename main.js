@@ -1,3 +1,8 @@
+const HEART_COLORS = {
+  pink: ['#ff4081', '#ff79b0', '#ff1493', '#ff6ec4'],
+  blue: ['#23f0ff', '#39c6d6', '#54b8aa', '#6bf0ff']
+};
+
 function random(max) {
   return Math.random() * max;
 }
@@ -101,16 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function handleSwipe(deltaX) {
     const swipeThreshold = 60; // Minimum 60px swipe
-    const overlay = document.getElementById("themeChangeOverlay");
 
     if (deltaX > swipeThreshold) {
         document.body.clientWidth; // Force browser to acknowledge transitions
 
         document.body.classList.add('theme-changing');
-
-        // Activate white overlay
-        overlay.style.transformOrigin = deltaX > 0 ? 'left' : 'right';
-        overlay.classList.add('active');
 
          // Toggle theme based on direction
         isBlueTheme = deltaX > 0 ? !isBlueTheme : isBlueTheme; 
@@ -118,12 +118,6 @@ function handleSwipe(deltaX) {
         blueStyle.disabled = !isBlueTheme;
 
         localStorage.setItem('isBlueTheme', isBlueTheme);
-
-        // Cleanup after transition
-        setTimeout(() => {
-          overlay.classList.remove('active');
-          document.body.classList.remove('theme-changing');
-        }, 400);
 
         // Clear all heart particles
         document.querySelectorAll(".heart-particle").forEach(heart => {
@@ -201,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const heartCount = 8;
-  const colors = ['#ff4081', '#ff79b0', '#ff1493', '#ff6ec4'];
+  const colors = isBlueTheme ? HEART_COLORS.blue : HEART_COLORS.pink;
   
   for (let i = 0; i < heartCount; i++) {
     createHeart(x, y, colors);
@@ -215,11 +209,13 @@ function createHeart(x, y, colors) {
     const heart = document.createElement('div');
     heart.innerHTML = '❤';
     heart.className = 'heart-particle';
+    if (isBlueTheme) heart.classList.add('blue-theme');
     heart.style.setProperty("--dx", random(2)- 1);
     heart.style.setProperty("--dy", random(2)- 1);
     heart.style.left = `${x}px`;
     heart.style.top = `${y}px`;
     heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+    heart.style.transition = 'color 0.5s ease';
     heart.style.fontSize = `${20 + Math.random() * 20}px`;
     
     document.body.appendChild(heart);

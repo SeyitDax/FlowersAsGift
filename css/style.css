@@ -49,32 +49,13 @@ body {
   filter: blur(0.1vmin);
 }
 
-#themeChangeOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgb(0, 0, 0);
-  z-index: 99999;
-  pointer-events: none;
-  opacity: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
-#themeChangeOverlay.active {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
 #keyboardOverlay {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
   width: 80%;
   max-width: 500px;
-  background: rgba(255, 182, 193, 0.9); /* Pink background */
+  background: rgba(255, 182, 193, 0.9);
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -83,12 +64,57 @@ body {
   visibility: hidden;
   opacity: 0;
   transition: bottom 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+#keyboardOverlay::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  z-index: -1;
+  background: conic-gradient(#ff69b4, #ff1493, #ff6b6b, #ff69b4);
+  border-radius: 18px;
+  animation: rotate-border 3s linear infinite;
+}
+#keyboardOverlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.2);
 }
 #keyboardOverlay.visible {
   visibility: visible;
   opacity: 1;
+  animation: float-keyboard 3s ease-in-out infinite;
 }
 
+@keyframes rotate-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float-keyboard {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+@keyframes rotate-border {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes float-keyboard {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0px);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
 #magicInput {
   width: 100%;
   padding: 12px;
@@ -107,6 +133,7 @@ body {
   pointer-events: none;
   touch-action: manipulation;
   animation: float 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  text-shadow: 0 2px 4px rgba(255, 105, 180, 0.3);
 }
 
 @keyframes float {
@@ -115,7 +142,7 @@ body {
     opacity: 1;
   }
   100% {
-    transform: translate(calc(var(--dx, 0) * 200px + 65px), calc(var(--dy, 0) * -200px + 0px)) scale(2.5) rotate(1440deg);
+    transform: translate(calc(var(--dx, 0) * 200px - 20px), calc(var(--dy, 0) * -200px + 69px)) scale(2.5) rotate(1440deg);
     opacity: 0;
   }
 }
