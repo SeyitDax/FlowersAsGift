@@ -101,28 +101,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function handleSwipe(deltaX) {
     const swipeThreshold = 60; // Minimum 60px swipe
-    const absDelta = Math.abs(deltaX);
     const overlay = document.getElementById("themeChangeOverlay");
 
     if (deltaX > swipeThreshold) {
         document.body.clientWidth; // Force browser to acknowledge transitions
+
         document.body.classList.add('theme-changing');
+
+        // Activate white overlay
+        overlay.style.transformOrigin = deltaX > 0 ? 'left' : 'right';
+        overlay.classList.add('active');
 
          // Toggle theme based on direction
         isBlueTheme = deltaX > 0 ? !isBlueTheme : isBlueTheme; 
-        overlay.style.opacity = "1";
-
         pinkStyle.disabled = isBlueTheme;
         blueStyle.disabled = !isBlueTheme;
 
-        document.body.classList.add('theme-changing');
-        setTimeout(() => {
-            document.body.classList.remove('theme-changing');
-        }, 500);
-
-        overlay.style.opacity = "0";
         localStorage.setItem('isBlueTheme', isBlueTheme);
-        document.querySelectorAll('.heart-particle').forEach(heart => heart.remove());
+
+        // Cleanup after transition
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          document.body.classList.remove('theme-changing');
+        }, 400);
+
+        // Clear all heart particles
+        document.querySelectorAll(".heart-particle").forEach(heart => {
+          heart.style.opacity = '0';
+          setTimeout(() => heart.remove(), 500);
+        })
     }
 }
 

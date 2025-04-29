@@ -41,10 +41,21 @@ body {
 
 #themeChangeOverlay {
   position: fixed;
-  width: 50%;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  z-index: 9999;
-  color: black;
+  background: rgb(0, 0, 0);
+  z-index: 99999;
+  pointer-events: none;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+#themeChangeOverlay.active {
+  opacity: 1;
+  transform: scaleX(1);
 }
 
 #keyboardOverlay {
@@ -93,7 +104,7 @@ body {
     opacity: 1;
   }
   100% {
-    transform: translate(calc(var(--dx, 0) * 200px - 33px), calc(var(--dy, 0) * -200px + 57px)) scale(2.5) rotate(1440deg);
+    transform: translate(calc(var(--dx, 0) * 200px - 42px), calc(var(--dy, 0) * -200px + 46px)) scale(2.5) rotate(1440deg);
     opacity: 0;
   }
 }
